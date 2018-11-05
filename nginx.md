@@ -88,8 +88,15 @@ Load balancing hay còn gọi là cân bằng tải, là một kỹ thuật thư
 
 Khi chúng ta có nhiều hơn một **Web Server**, cùng với đó là sự ra tăng lưu lượng truy cập thì việc bổ sung thêm một máy chủ để phân phối lưu lượng này một cách hợp lý là cần thiết. Máy chủ này được gọi là **Load balancer**.
 
+Nginx load balancing có thể thực hiện tại các lớp mạng khác nhau. Load balancing chạy ở 2 lớp mạng là:
+* Load balancing layer 4: chuyển tiếp gói tin TCP raw đến máy chủ ứng dụng
+* Load balancing layer 7: phân tích các tiêu đề HTTP trước khi chuyển tiếp đến máy chủ ứng dụng
 
-#### 5.1Một HTTP proxy đơn giản
+### 6. Load balancing layer 7
+
+<img src="https://imgur.com/a/JxLKxlQ" >
+
+#### 6.1 Một HTTP proxy đơn giản
 
 Loại proxy cơ bản và trực tiếp nhất là chuyển tiếp yêu cầu đến một server đơn có thể liên lạc với proxy server qua giao thức HTTP được biết đến như một "proxy pass" chung được xử lý bằng một lệnh tên là ```proxy pass``` .
 
@@ -104,7 +111,7 @@ location /match/here {
 }
 ```
 
-#### 5.2 Định nghĩa một Upstream Context để cân bằng tải cho kết nối proxy
+#### 6.2 Định nghĩa một Upstream Context để cân bằng tải cho kết nối proxy
 
 Trong ví dụ trước, chúng tôi biết làm thế nào để thực hiện một http proxy đơn giản đến một backend server duy nhất. Nginx cho phép chúng ta dễ dàng mở rộng cấu hình này ra bằng cách xác định toàn bộ backend server mà ta có thể chuyển yêu cầu tới.
 
@@ -129,7 +136,7 @@ server {
 ```
 Trong ví dụ trên, ta đã thiết lập một upstream context là ```backend_hosts```. Khi đã được xác định, tên này sẽ có sẵn để sử dụng trong phạm vi ủy quyền đi như thể nó là một tên miền thông thường. Như bạn có thể thấy, trong server block , ta có thể chuyển bất kỳ yêu cầu nào đến ```example.com/proxy-me/...``` tới pool được chỉ ra ở trên. Trong "pool" đó, một host được chọn bằng cách áp dụng một thuật toán có thể cấu hình. Theo mặc định, đây chỉ là một quá trình lựa chọn round-robin đơn giản.
 
-#### 5.3 Thuật toán cân bằng tải trên Upstream server
+#### 6.3 Thuật toán cân bằng tải trên Upstream server
 
 Các thuật toán cân bằng tài thường dùng:
 
@@ -160,3 +167,7 @@ upstreambackend_hosts {
 }. . .
 ```
 Ở ví dụ trên, host1.example.com sẽ phải nhận tải trọng gấp 3 lần 2 server còn lại. Mặc định, mỗi server có tải trọng là 1.
+
+### 7. Load balancing layer 4
+
+<img src="https://imgur.com/a/AgDSDf6" >
