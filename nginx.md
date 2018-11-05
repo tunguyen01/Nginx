@@ -94,7 +94,9 @@ Nginx load balancing có thể thực hiện tại các lớp mạng khác nhau.
 
 ### 6. Load balancing layer 7
 
-<img src="https://imgur.com/T2UaC7K" >
+<img src="https://imgur.com/T2UaC7K.png" >
+
+
 
 #### 6.1 Một HTTP proxy đơn giản
 
@@ -170,4 +172,4 @@ upstreambackend_hosts {
 
 ### 7. Load balancing layer 4
 
-<img src="https://imgur.com/zCEGu0R" >
+<img src="https://imgur.com/zCEGu0R.png" >
