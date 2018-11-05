@@ -96,13 +96,13 @@ Nginx load balancing có thể thực hiện tại các lớp mạng khác nhau.
 
 <img src="https://imgur.com/T2UaC7K.png" >
 
-
+Cân bằng tải hoạt động ở lớp 7 sẽ kiểm tra lưu lượng truy cập ở tầng ứng dụng để tìm ra mọi thứ và có một cái nhìn ở mức độ cao. Ví dụ: bộ cân bằng tải hoạt động ở lớp 7 nhận được HTTP có thể kiểm tra URL và gửi yêu cầu đến các bộ phụ trợ khác nhau tùy thuộc vào URL. Và cho phép các web server hoạt động trên cùng một địa chỉ IP, port.
 
 #### 6.1 Một HTTP proxy đơn giản
 
-Loại proxy cơ bản và trực tiếp nhất là chuyển tiếp yêu cầu đến một server đơn có thể liên lạc với proxy server qua giao thức HTTP được biết đến như một "proxy pass" chung được xử lý bằng một lệnh tên là ```proxy pass``` .
+Loại proxy cơ bản và trực tiếp nhất là chuyển tiếp yêu cầu đến một server đơn có thể liên lạc với proxy server qua giao thức HTTP được biết đến như một "proxy pass" chung được xử lý bằng một lệnh tên là ```proxy_pass``` .
 
-Khi một yêu cầu khớp với địa chỉ trong ```proxy pass``` nhất định, yêu cầu đó sẽ được điều hướng đến URL trong location context đó.
+Khi một yêu cầu khớp với địa chỉ trong ```proxy_pass``` nhất định, yêu cầu đó sẽ được điều hướng đến URL trong location context đó.
 
 Ví dụ:
 
@@ -173,3 +173,28 @@ upstreambackend_hosts {
 ### 7. Load balancing layer 4
 
 <img src="https://imgur.com/zCEGu0R.png" >
+
+Cân bằng tải hoạt động ở lớp 4 dùng để chỉ triển khai trong đó địa chỉ IP của trình cân bằng tải là một địa chỉ được quảng cáo cho khách hàng cho một trang web hoặc dịch vụ (thông qua DNS chẳng hạn). Do đó, khách hàng ghi lại địa chỉ của cân bằng tải làm địa chỉ IP đích trong các yêu cầu của họ.
+
+Khi cân bằng tải lớp 4 nhận được yêu cầu và đưa ra quyết định cân bằng tải, nó cũng thực hiện dịch địa chỉ mạng (NAT) trên gói yêu cầu, thay đổi địa chỉ IP đích đã ghi thành địa chỉ của máy chủ nội dung mà nó đã chọn trên mạng nội bộ. Tương tự, trước khi chuyển tiếp phản hồi của máy chủ tới máy khách, trình cân bằng tải thay đổi địa chỉ nguồn được ghi lại trong tiêu đề gói từ địa chỉ IP của máy chủ.
+
+ Các cân bằng tải lớp 4 đưa ra các quyết định định tuyến dựa trên thông tin địa chỉ được trích xuất từ ​​vài gói đầu tiên trong luồng TCP và không kiểm tra nội dung gói.
+
+ Cú pháp hơi khác với cú pháp mà chúng ta đã thấy trước đây. Cụ thể, cả phần ```upstream``` và ```server``` đều được chứa bên trong một khối ```stream```. Để sử dụng tính năng này, bạn phải biên dịch nginx với cờ ```--with-stream```. Trên Debian và Ubuntu, phiên bản nginx trong kho đã được biên dịch với cờ này, vì vậy bạn có thể trực tiếp sử dụng nó.
+
+ Giả sử, bạn có một số máy chủ DNS và bạn muốn sử dụng nginx làm bộ cân bằng tải. Bạn chỉ cần đặt điều này vào tệp cấu hình:
+ ```
+ stream {
+   upstream dns_backends {
+     server 8.8.8.8:53;
+     server 8.8.4.4:53;
+   }
+
+   server {
+     listen 53 udp;
+     proxy_pass dns_backends;
+     proxy_responses 1;
+   }
+ }
+ ```
+Các chiến lược tải cân bằng và các tùy chọn cấu hình khác mà chúng tôi đã mô tả trước đó cũng được áp dụng ở đây.
